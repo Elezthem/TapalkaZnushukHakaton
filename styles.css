@@ -686,6 +686,26 @@ input {
   color: var(--text);
 }
 
+@media (min-width: 961px) and (max-width: 1180px) {
+  .hero {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .tap-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mcp-console,
+  .console-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tap-stage-ring {
+    width: min(100%, 360px);
+    margin-inline: auto;
+  }
+}
+
 @media (max-width: 960px) {
   .hero,
   .tap-layout,
@@ -713,5 +733,204 @@ input {
   .targets,
   .architecture {
     padding: 22px;
+  }
+
+  h1 {
+    max-width: none;
+  }
+
+  .tap-stage-ring {
+    width: min(100%, 360px);
+    margin-inline: auto;
+  }
+
+  .scenario-strip {
+    flex-direction: column;
+  }
+
+  .status-line,
+  .pulse-line,
+  .log-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .event-log-wrap,
+  .agent-output {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    width: calc(100% - 16px);
+    padding: 14px 0 48px;
+  }
+
+  section {
+    margin-top: 16px;
+  }
+
+  .hero-copy,
+  .hero-card,
+  .tap-panel,
+  .reward-panel,
+  .mcp-panel,
+  .scenario,
+  .targets,
+  .architecture {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .status-pill {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: clamp(32px, 10vw, 46px);
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+
+  .lead,
+  .section-copy,
+  .target-card p,
+  .flow-card p,
+  .tool-card p,
+  .reward-card p,
+  .event-item p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .hero-actions,
+  .console-actions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .hero-stats {
+    gap: 12px;
+  }
+
+  .hero-stats strong,
+  .discount-preview strong {
+    font-size: 36px;
+  }
+
+  .target-grid,
+  .flow-grid,
+  .tools-grid,
+  .architecture-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .target-card,
+  .reward-card,
+  .flow-card,
+  .tool-card,
+  .arch-card,
+  .scenario-card,
+  .console-card,
+  .tap-metrics article,
+  .status-line,
+  .event-log-wrap,
+  .pulse-line {
+    padding: 16px;
+  }
+
+  .tap-stage-ring {
+    width: min(100%, 290px);
+  }
+
+  .tap-stage-ring::before {
+    inset: -14px;
+  }
+
+  .tap-button span {
+    font-size: clamp(20px, 7vw, 28px);
+  }
+
+  .tap-button strong {
+    font-size: 15px;
+  }
+
+  .tap-metrics {
+    gap: 12px;
+  }
+
+  .tap-metrics strong {
+    font-size: 22px;
+  }
+
+  .quest-step {
+    padding-left: 28px;
+    font-size: 14px;
+  }
+
+  .mcp-console {
+    gap: 12px;
+  }
+
+  input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .tool-filters,
+  .badge-row {
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .agent-output,
+  .event-log-wrap {
+    min-height: 180px;
+  }
+
+  .agent-output {
+    font-size: 12px;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .orb {
+    width: 52vw;
+    height: 52vw;
+    opacity: 0.3;
+  }
+
+  .eyebrow {
+    letter-spacing: 0.12em;
+    font-size: 11px;
+  }
+
+  .discount-preview strong {
+    font-size: 32px;
+  }
+
+  .target-card .price,
+  .tap-metrics strong {
+    font-size: 20px;
+  }
+
+  .scenario-card strong,
+  .tool-card strong,
+  .flow-card .step,
+  .arch-index {
+    word-break: break-word;
   }
 }
