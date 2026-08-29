@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tapalka Znyzhok x Silpo MCP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+
+  <main class="page">
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <p class="eyebrow">Silpo AI Factory Hackathon 2026</p>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>Official MCP-first concept for https://mcp.silpo.ua/mcp</span>
+        </div>
+        <h1>Тапай так, ніби від цього залежить знижка. Бо тут саме так і є.</h1>
+        <p class="lead">
+          Tapalka Znyzhok перетворює полювання на вигоду на гру: користувач тисне на велику кнопку,
+          накопичує смакосилу, а агент за офіційною документацією MCP «Сільпо» збирає кошик, акції,
+          купони, бонуси та найкращий сценарій для checkout.
+        </p>
+        <div class="hero-actions">
+          <a href="#tap-zone" class="button primary">Почати тапати</a>
+          <a href="#mcp-panel" class="button ghost">MCP Control Room</a>
+        </div>
+        <ul class="hero-stats">
+          <li><strong>39</strong><span>tools у документації MCP</span></li>
+          <li><strong>OAuth</strong><span>2.1 + PKCE у server-side флоу</span></li>
+          <li><strong>JSON-RPC</strong><span>`tools/list` і `tools/call` як ядро</span></li>
+        </ul>
+      </div>
+
+      <aside class="hero-card">
+        <div class="card-glow"></div>
+        <p class="mini-label">Поточна ціль</p>
+        <h2 id="hero-target-name">-</h2>
+        <p id="hero-target-desc">Оберіть товар нижче, щоб запустити полювання на знижку.</p>
+        <div class="discount-preview">
+          <span>Потенційна знижка</span>
+          <strong id="hero-discount">0%</strong>
+          <small id="hero-final-price">Фінальна ціна з’явиться після стратегії агента.</small>
+        </div>
+        <div class="progress-bar">
+          <div id="hero-progress-bar"></div>
+        </div>
+        <div class="pulse-line">
+          <span>Agent pulse</span>
+          <strong id="pulse-copy">Очікує перших тапів</strong>
+        </div>
+      </aside>
+    </section>
+
+    <section class="targets reveal" id="targets">
+      <div class="section-heading">
+        <p class="eyebrow">Wishlist</p>
+        <h2>Обери товар, за який будемо битись</h2>
+        <p class="section-copy">
+          Кожна ціль веде агента до іншого MCP-маршруту: базовий пошук, альтернативи, акції,
+          персональні купони або бонусна оптимізація кошика.
+        </p>
+      </div>
+      <div id="target-grid" class="target-grid"></div>
+    </section>
+
+    <section class="tap-layout reveal" id="tap-zone">
+      <div class="tap-panel">
+        <p class="eyebrow">Tap Engine</p>
+        <h2>Тапи напряму впливають на агресивність MCP-стратегії</h2>
+        <p class="section-copy">
+          У демо-квесті ми використовуємо тапи як тригер глибини агентного аналізу:
+          від `silpo_get_promotions` до `silpo_get_my_coupons`, `silpo_get_loyalty_info`
+          і фінального `silpo_update_shopping_cart`.
+        </p>
+
+        <div class="tap-stage-ring">
+          <button id="tap-button" class="tap-button" type="button">
+            <span>Тапай за знижку</span>
+            <strong id="tap-power-label">+1 сила</strong>
+          </button>
+        </div>
+
+        <div class="tap-metrics">
+          <article>
+            <span>Тапів</span>
+            <strong id="tap-count">0</strong>
+          </article>
+          <article>
+            <span>Смакосила</span>
+            <strong id="tap-energy">0</strong>
+          </article>
+          <article>
+            <span>Рівень квесту</span>
+            <strong id="tap-level">Starter</strong>
+          </article>
+        </div>
+      </div>
+
+      <aside class="reward-panel">
+        <p class="eyebrow">Reward Forge</p>
+        <h2>Що агент вже може довести через MCP</h2>
+        <div class="reward-stack">
+          <div class="reward-card accent">
+            <span>Рекомендована знижка</span>
+            <strong id="reward-discount">0%</strong>
+            <p id="reward-copy">Спочатку оберіть товар і зробіть кілька десятків тапів.</p>
+          </div>
+          <div class="reward-card">
+            <span>Тактика агента</span>
+            <p id="strategy-copy">Поки що агент чекає на ціль і сигнали від користувача.</p>
+          </div>
+          <div class="reward-card">
+            <span>Наступний поріг</span>
+            <p id="next-goal-copy">25 тапів до першого бусту пошуку акцій.</p>
+          </div>
+        </div>
+
+        <div class="quest-track">
+          <div class="quest-line"></div>
+          <div id="quest-steps" class="quest-steps"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="scenario reveal">
+      <div class="section-heading">
+        <p class="eyebrow">Agent Flow</p>
+        <h2>Офіційний флоу за документацією MCP «Сільпо»</h2>
+      </div>
+      <div id="flow-grid" class="flow-grid"></div>
+    </section>
+
+    <section class="architecture reveal">
+      <div class="section-heading">
+        <p class="eyebrow">MCP-first Stack</p>
+        <h2>Сайт не ходить в неофіційні API</h2>
+      </div>
+      <div class="architecture-grid">
+        <article class="arch-card">
+          <span class="arch-index">01</span>
+          <h3>Frontend</h3>
+          <p>Тапи, візуалізація прогресу, лог сесії й виклики лише у власний proxy-шар.</p>
+        </article>
+        <article class="arch-card">
+          <span class="arch-index">02</span>
+          <h3>MCP Proxy</h3>
+          <p>Зберігає MCP token server-side і викликає `tools/list` та `tools/call` через JSON-RPC.</p>
+        </article>
+        <article class="arch-card">
+          <span class="arch-index">03</span>
+          <h3>Silpo MCP</h3>
+          <p>`https://mcp.silpo.ua/mcp`, OAuth 2.1 + PKCE, cart-first сценарії та лояльність.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="mcp-panel reveal" id="mcp-panel">
+      <div class="section-heading">
+        <p class="eyebrow">MCP Control Room</p>
+        <h2>Live tools, сесія агента і журнал викликів</h2>
+      </div>
+
+      <div class="mcp-console">
+        <div class="console-card">
+          <label for="proxy-endpoint">Proxy endpoint</label>
+          <input id="proxy-endpoint" type="text" value="/api/mcp">
+        </div>
+        <div class="console-card">
+          <label for="mcp-endpoint">Silpo MCP endpoint</label>
+          <input id="mcp-endpoint" type="text" value="https://mcp.silpo.ua/mcp">
+        </div>
+        <div class="console-actions">
+          <button id="load-live-tools" class="button primary" type="button">Завантажити tools/list</button>
+          <button id="run-agent" class="button ghost" type="button">Запустити MCP-сценарій</button>
+        </div>
+      </div>
+
+      <div class="console-output">
+        <div class="status-line">
+          <span>Статус</span>
+          <strong id="mcp-status">Очікує підключення до proxy. Demo fallback активний.</strong>
+        </div>
+        <div class="console-grid">
+          <pre id="agent-output" class="agent-output">{
+  "mode": "demo",
+  "message": "Оберіть товар і натапайте енергію, тоді агент складе MCP-first сценарій."
+}</pre>
+          <div class="event-log-wrap">
+            <div class="log-heading">
+              <span>Лог сесії</span>
+              <strong id="log-mode">demo events</strong>
+            </div>
+            <div id="event-log" class="event-log"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-strip">
+        <div class="scenario-card">
+          <span>Обов’язковий старт</span>
+          <strong>`silpo_get_my_shopping_cart`</strong>
+        </div>
+        <div class="scenario-card">
+          <span>Потім</span>
+          <strong>`silpo_get_shopping_cart_by_id`</strong>
+        </div>
+        <div class="scenario-card">
+          <span>Валідація слота</span>
+          <strong>`silpo_get_time_slots`</strong>
+        </div>
+        <div class="scenario-card">
+          <span>Пошук вигоди</span>
+          <strong>`silpo_get_products` + `silpo_get_promotions`</strong>
+        </div>
+      </div>
+
+      <div class="tool-filters">
+        <button class="chip active" data-filter="all" type="button">Усі</button>
+        <button class="chip" data-filter="location" type="button">Локація</button>
+        <button class="chip" data-filter="products" type="button">Товари</button>
+        <button class="chip" data-filter="catalog" type="button">Каталог</button>
+        <button class="chip" data-filter="cart" type="button">Кошик</button>
+        <button class="chip" data-filter="orders" type="button">Замовлення</button>
+        <button class="chip" data-filter="profile" type="button">Профіль</button>
+        <button class="chip" data-filter="loyalty" type="button">Лояльність</button>
+      </div>
+
+      <div id="tools-grid" class="tools-grid"></div>
+    </section>
+  </main>
+
+  <template id="float-template">
+    <span class="float-score">+1</span>
+  </template>
+
+  <script src="./app.js"></script>
+</body>
+</html>
