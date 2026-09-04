@@ -2,61 +2,83 @@
 
 Промо-сайт для хакатону `AI Factory` від «Сільпо»: користувач тапає, накопичує прогрес і запускає агентний сценарій пошуку максимальної вигоди на бажаний товар через офіційний MCP «Сільпо».
 
-## Що оновлено
+## Що є в проєкті
 
-- сильніший motion UI: floating orbs, reveal-анімації, glow ring, event log, quest track
-- MCP-first архітектура замість простої локальної симуляції
-- сценарій побудований навколо офіційного флоу з docs:
-  - `tools/list`
-  - `silpo_get_my_shopping_cart`
-  - `silpo_get_shopping_cart_by_id`
-  - `silpo_get_time_slots`
-  - далі `silpo_get_products`, `silpo_get_promotions`, купони, бонуси, оновлення кошика
-- доданий server-side proxy-шаблон [server/silpo-mcp-proxy.js](./server/silpo-mcp-proxy.js), бо документація вимагає не зберігати MCP token у фронтенді
+- motion UI з tap-механікою, quest-треком і логом подій
+- MCP-first флоу навколо `tools/list`, кошика, слотів, промо, купонів і бонусів
+- Cloudflare Worker для server-side proxy до `https://mcp.silpo.ua/mcp`
+- GitHub Pages workflow для статичної версії фронтенду
+- локальний Node proxy-шаблон у [server/silpo-mcp-proxy.js](./server/silpo-mcp-proxy.js)
 
 ## Структура
 
-- [index.html](./index.html) — сторінка
-- [styles.css](./styles.css) — візуал і анімації
-- [app.js](./app.js) — tap logic, event log, MCP orchestration
-- [server/silpo-mcp-proxy.js](./server/silpo-mcp-proxy.js) — proxy до `https://mcp.silpo.ua/mcp`
+- [index.html](./index.html) - сторінка
+- [styles.css](./styles.css) - стилі й анімації
+- [app.js](./app.js) - UI, tap logic, MCP orchestration
+- [worker/index.js](./worker/index.js) - Cloudflare Worker proxy + static asset serving
+- [wrangler.jsonc](./wrangler.jsonc) - конфіг Cloudflare Workers
+- [.github/workflows/pages.yml](./.github/workflows/pages.yml) - автодеплой на GitHub Pages
 
-## Як це відповідає docs
+## Як запускати локально
 
-За документацією `https://ai-factory.silpo.ua/docs/mcp`:
+### Варіант 1: Cloudflare Worker dev
 
-- потрібно використовувати саме `https://mcp.silpo.ua/mcp`
-- авторизація працює через `OAuth 2.1 + PKCE`
-- токен треба тримати server-side
-- актуальні назви й схеми tools слід брати з `tools/list`
-- cart-first сценарій стартує з:
-  - `silpo_get_my_shopping_cart`
-  - `silpo_get_shopping_cart_by_id`
-  - `silpo_get_time_slots`
+```powershell
+npm install
+$env:SILPO_MCP_TOKEN="your_mcp_token"
+npm run dev
+```
 
-У цьому проєкті саме так і закладено архітектуру.
+Після цього:
 
-## Як запускати
+- сайт буде доступний через локальний dev server Wrangler
+- proxy endpoint буде `/api/mcp`
+- health check буде на `/health`
 
-Статичну частину можна відкрити просто через браузер.
-
-Для live demo потрібен Node.js, щоб підняти proxy:
+### Варіант 2: старий локальний Node proxy
 
 ```powershell
 $env:SILPO_MCP_TOKEN="your_mcp_token"
 node .\server\silpo-mcp-proxy.js
 ```
 
-Після цього:
+## Деплой
 
-- proxy буде на `http://localhost:8787/api/mcp`
-- у сайті в полі `Proxy endpoint` вкажіть `http://localhost:8787/api/mcp`
-- натисніть `Завантажити tools/list`
-- потім `Запустити MCP-сценарій`
+### GitHub
 
-## Що ще варто доробити
+Після пушу в `main`:
 
-- повний OAuth 2.1 + PKCE login flow замість ручного підкладання server token
-- мапінг реальних аргументів для кожного `tools/call` після отримання live schema з `tools/list`
-- безпечне збереження refresh token
-- нормальний backend state для cart context, branchId, deliveryType, timeslot
+- код зберігається в репозиторії
+- GitHub Actions викладає статичну версію на GitHub Pages
+
+Важливо: GitHub Pages не може безпечно тримати `SILPO_MCP_TOKEN`, тому live MCP там має ходити в окремий Cloudflare Worker URL.
+
+### Cloudflare
+
+```powershell
+npm install
+npx wrangler login
+npx wrangler secret put SILPO_MCP_TOKEN
+npx wrangler deploy
+```
+
+Опційно можна додати:
+
+```powershell
+npx wrangler secret put SILPO_MCP_ENDPOINT
+```
+
+Якщо секрет не заданий, використовується `https://mcp.silpo.ua/mcp`.
+
+## Що важливо по Silpo MCP
+
+За docs `https://ai-factory.silpo.ua/docs/mcp`:
+
+- токен треба тримати server-side
+- live schema краще завжди брати з `tools/list`
+- cart-first флоу стартує з:
+  - `silpo_get_my_shopping_cart`
+  - `silpo_get_shopping_cart_by_id`
+  - `silpo_get_time_slots`
+
+Тому GitHub Pages тут лише для фронтенду, а робочий live MCP краще запускати через Cloudflare Worker.
